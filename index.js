@@ -4,7 +4,7 @@ app.get("/", (req,res) => res.sendFile(__dirname + "/index.html"))
 //app.listen(3001, () => console.log("Listening on http port 3001"))
 const websocketServer = require("websocket").server
 
-const host  = "127.0.0.1"
+//const host  = "127.0.0.1"
 const port = process.env.PORT || 3000
 
 const httpServer = http.createServer(app)
