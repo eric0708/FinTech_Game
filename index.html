@@ -21,8 +21,8 @@
         let clientId = null
         let username = null
         let publickey = null
-        var HOST = location.origin.replace(/^http/, 'ws')
-        let ws = new WebSocket(HOST)
+        //var HOST = location.origin.replace(/^http/, 'ws')
+        let ws = new WebSocket('ws://127.0.0.1:3000')
         const txtUsername = document.getElementById("txtUsername")
         const txtPublickey = document.getElementById("txtPublickey")
         const btnRegister = document.getElementById("btnRegister")
