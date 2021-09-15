@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>FinTech Game</h1>
+    <input type = 'text' id = 'txtUsername'>
+    <input type = 'text' id = 'txtPublickey'>
+    <button id = "btnRegister">Register</button>
+    <button id = "btnLogin">Login</button>
+    <button id = 'btnCreate'>New Game</button>
+    <input type = 'text' id = 'txtHostname'>
+    <button id = 'btnJoin'>Join Game</button>
+    <button id = 'btnGetquestion'>Get Question</button>
+    <script>
+        //HTML elements
+        let clientId = null
+        let username = null
+        let publickey = null
+        var HOST = location.origin.replace(/^http/, 'ws')
+        let ws = new WebSocket(HOST)
+        const txtUsername = document.getElementById("txtUsername")
+        const txtPublickey = document.getElementById("txtPublickey")
+        const btnRegister = document.getElementById("btnRegister")
+        const btnLogin = document.getElementById("btnLogin")
+        const btnCreate = document.getElementById("btnCreate")
+        const txtHostname = document.getElementById("txtHostname")
+        const btnJoin = document.getElementById("btnJoin")
+        const btnGetquestion = document.getElementById("btnGetquestion")
+
+        //wiring events
+        btnGetquestion.addEventListener("click", e => {
+
+            const payLoad = {
+                "method": "getquestion",
+                "clientId": clientId,
+                "username": username,
+            }
+
+            ws.send(JSON.stringify(payLoad))
+        })
+
+        btnLogin.addEventListener("click", e => {
+
+            if (txtUsername.value.length !== 0 && txtPublickey.value.length !== 0){
+                const payLoad = {
+                    "method": "login",
+                    "clientId": clientId,
+                    "username": txtUsername.value,
+                    "publickey": txtPublickey.value
+                }
+
+                ws.send(JSON.stringify(payLoad))
+            }
+
+        })
+
+        btnRegister.addEventListener("click", e => {
+
+            if (txtUsername.value.length !== 0 && txtPublickey.value.length !== 0){
+                const payLoad = {
+                    "method": "register",
+                    "clientId": clientId,
+                    "username": txtUsername.value,
+                    "publickey": txtPublickey.value
+                }
+
+                ws.send(JSON.stringify(payLoad))
+            }
+
+        })
+
+        btnJoin.addEventListener("click", e => {
+            const payLoad = {
+                "method": "join",
+                "clientId": clientId,
+                "username": username,
+                "hostname": txtHostname.value
+            }
+
+            ws.send(JSON.stringify(payLoad))
+        })
+
+        btnCreate.addEventListener("click", e => {
+            const payLoad = {
+                "method": "create",
+                "clientId": clientId,
+                "username": username
+            }
+
+            ws.send(JSON.stringify(payLoad))
+        })
+
+        ws.onmessage = message => {
+            //message.data
+            const response = JSON.parse(message.data)
+            console.log(response)
+
+            //connect
+            if (response.method === "connect"){
+                clientId = response.clientId
+                console.log("Client Id set successfully: " + clientId)
+            }
+
+            //register
+            if (response.method === "register"){
+                username = response.username
+                publickey = response.publickey
+                console.log("Player registered with username:" + username + " and public key: " + publickey)
+            }
+
+            //login
+            if (response.method === "login"){
+                result = response.result
+                username = response.username
+                publickey = response.publickey
+
+                if (result === "success"){
+                    console.log("Player logined with username: " + username + " and public key: " + publickey)
+                }
+                else if (result === "fail"){
+                    console.log("Player with username:" + username + " and public key: " + publickey + " not registered")
+                }
+            }
+
+            //create
+            if (response.method === "create"){
+                //clientId = response.clientId
+                console.log("Game successfully created with host: " + response.game.host +" and game Id: " + response.game.id)
+            }
+
+            //join 
+            if (response.method === "join"){
+                //clientId = response.clientId
+                console.log("Game successfully joined with host: " + response.game.host +" and game Id: " + response.game.id)
+            }
+
+            //getquestion
+            if (response.method === "getquestion"){
+                //clientId = response.clientId
+                console.log(response.game.question.Q)
+                console.log(response.game.question.A)        
+                console.log(response.game.question.B)  
+                console.log(response.game.question.C)  
+                console.log(response.game.question.D)  
+                console.log(response.game.question.Ans)        
+            }
+        }
+
+    </script>
+</body>
+</html>
