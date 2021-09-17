@@ -194,7 +194,7 @@ btnCreateRoom.addEventListener('click', function (e) {
         "clientId": clientId,
         "username": username
     }
-    game.preGame()
+    
     ws.send(JSON.stringify(payLoad))
 })
 // 加入房間
@@ -264,6 +264,7 @@ ws.onmessage = message => {
     if (response.method === "create"){
         //clientId = response.clientId
         console.log("Game successfully created with host: " + response.game.host +" and game Id: " + response.game.id)
+        game.preGame()
     }
 
     //join 
