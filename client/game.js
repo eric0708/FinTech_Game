@@ -277,8 +277,8 @@ ws.onmessage = message => {
             "method": "startgame",
             "gameId": gameId
         }
-
-        setTimeout(3000)
+        
+        //setTimeout(3000)
         ws.send(JSON.stringify(payLoad))
         
     }
