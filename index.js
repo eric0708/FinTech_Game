@@ -2,7 +2,7 @@ const http = require("http")
 const express = require("express")
 const app = express()
 //app.get("/", (req,res) => res.sendFile(__dirname + "/index.html"))
-app.use(express().static("client"))
+app.use(express.static("client"))
 //app.listen(3001, () => console.log("Listening on http port 3001"))
 const websocketServer = require("websocket").server
 
@@ -61,6 +61,8 @@ wsServer.on("request", request => {
                 "gameId": null
             }
 
+            console.log("player registered with username: " + username +" and public key: " + publickey)
+
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
         }
@@ -89,6 +91,8 @@ wsServer.on("request", request => {
                     "publickey": publickey
                 }
             }
+
+            console.log("player logined with username: " + username +" and public key: " + publickey)
 
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
