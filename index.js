@@ -49,19 +49,34 @@ wsServer.on("request", request => {
             const username = result.username
             const publickey = result.publickey
 
-            const payLoad = {
-                "method": "register",
-                "username": username,
-                "publickey": publickey
-            }
+            if ((username in users) && (users[username].publickey === publickey)){
+                users[username].clientId = clientId
 
-            users[username] = {
-                "publickey": publickey,
-                "clientId": clientId,
-                "gameId": null
-            }
+                payLoad = {
+                    "method": "register",
+                    "result": "fail",
+                    "username": username,
+                    "publickey": publickey
+                }
 
-            console.log("Player registered with username: " + username +" and public key: " + publickey)
+                console.log("Player with username: " + username +" and public key: " + publickey + " already registered")
+            }
+            else{
+                payLoad = {
+                    "method": "register",
+                    "result": "success",
+                    "username": username,
+                    "publickey": publickey
+                }
+                
+                users[username] = {
+                    "publickey": publickey,
+                    "clientId": clientId,
+                    "gameId": null
+                }
+
+                console.log("Player registered with username: " + username +" and public key: " + publickey)
+            }
 
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))

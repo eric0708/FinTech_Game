@@ -159,12 +159,12 @@ btnRegister.addEventListener('click', function (e) {
     if (userName.value.length !== 0 && userPublicKey.value.length !== 0)
     {
         const payLoad = {
-            'method': 'regitster',
+            'method': 'register',
             'clientId': clientId, 
             'username': userName.value,
             'publickey': userPublicKey.value
         }
-        game.changeForm()
+        
         ws.send(JSON.stringify(payLoad))
     }
 })
@@ -230,9 +230,19 @@ ws.onmessage = message => {
 
     //register
     if (response.method === "register"){
+        result = response.result
         username = response.username
         publickey = response.publickey
-        console.log("Player registered with username:" + username + " and public key: " + publickey)
+
+        if (result === "success"){
+            console.log("Player registered with username:" + username + " and public key: " + publickey)
+            game.changeForm()
+        }
+        else if (result === "fail"){
+            console.log("Player with username:" + username + " and public key: " + publickey + " already registered")
+        }
+        
+        
     }
 
     //login
