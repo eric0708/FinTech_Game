@@ -163,6 +163,26 @@ wsServer.on("request", request => {
             }
 
         }
+        //start a game
+        if (result.method === "startgame"){
+            const gameId = result.gameId
+
+            const randomquestionnum = Math.floor(Math.random() * numofquestions)
+            const randomquestion = questions[randomquestionnum]
+
+            games[gameId].question = randomquestion
+
+            const payLoad = {
+                "method": "startgame",
+                "game": games[gameId]
+            }
+
+            const con1 = clients[users[games[gameId].host].clientId].connection
+            const con2 = clients[users[games[gameId].opponent].clientId].connection
+
+            con1.send(JSON.stringify(payLoad))
+            con2.send(JSON.stringify(payLoad))
+        }
         //a user wants to get a question
         if (result.method === "getquestion"){
             const clientId = result.clientId

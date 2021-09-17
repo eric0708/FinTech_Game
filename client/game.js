@@ -10,7 +10,7 @@ const loginForm = document.querySelector('form:nth-child(1)')
 const newForm = document.querySelector('form:nth-child(2)')
 const userName = document.getElementById('name')
 const userPublicKey = document.getElementById('publicKey')
-const roomNumber = document.getElementById('roomNum')
+const hostName = document.getElementById('txthostName')
 const timer = document.getElementById('timer')
 const questionBoard = document.querySelector('.questions')
 
@@ -106,12 +106,12 @@ class QuestionsBoard{
         this.ans3 = answerC
         this.ans4 = answerD
     }
-    showQuestion() {
-        
+    showQuestion(ques) {
+
     }
     // 顯示場次
     showQuestionNum(num) {
-        question.innerText = '第' + num + '場'
+        question.innerText = '第 ' + num + ' 場'
     }
     // 移除題目顯示效果
     removeEffect() {
@@ -206,10 +206,9 @@ btnJoinRoom.addEventListener('click', function (e) {
             "method": "join",
             "clientId": clientId,
             "username": username,
-            // 這地方應該有問題，我還沒設計host名稱
-            "hostname": txtHostname.value
+            "hostname": hostName.value
         }
-        game.preGame()
+        
         ws.send(JSON.stringify(payLoad))
     }
 })
@@ -270,8 +269,27 @@ ws.onmessage = message => {
 
     //join 
     if (response.method === "join"){
-        //clientId = response.clientId
+        gameId = response.game.id
         console.log("Game successfully joined with host: " + response.game.host +" and game Id: " + response.game.id)
+        game.preGame()
+
+        const payLoad = {
+            "method": "startgame",
+            "gameId": gameId
+        }
+
+        ws.send(JSON.stringify(payLoad))
+    }
+
+    //start game
+    if (response.method === "startgame"){
+        board.showQuestionNum(1)
+        console.log(response.game.question.Q)
+        console.log(response.game.question.A)        
+        console.log(response.game.question.B)  
+        console.log(response.game.question.C)  
+        console.log(response.game.question.D)  
+        console.log(response.game.question.Ans)
     }
 
     //getquestion
