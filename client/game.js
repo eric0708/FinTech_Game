@@ -180,7 +180,7 @@ btnLogin.addEventListener('click', function (e) {
             "username": userName.value,
             "publickey": userPublicKey.value
         }
-        game.changeForm()
+        
         ws.send(JSON.stringify(payLoad))
     }
 })
@@ -243,6 +243,7 @@ ws.onmessage = message => {
 
         if (result === "success"){
             console.log("Player logined with username: " + username + " and public key: " + publickey)
+            game.changeForm()
         }
         else if (result === "fail"){
             console.log("Player with username:" + username + " and public key: " + publickey + " not registered")
