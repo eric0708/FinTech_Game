@@ -68,7 +68,7 @@ wsServer.on("request", request => {
                     "username": username,
                     "publickey": publickey
                 }
-                
+
                 users[username] = {
                     "publickey": publickey,
                     "clientId": clientId,
@@ -135,6 +135,8 @@ wsServer.on("request", request => {
                     "method": "create",
                     "game": games[gameId]
                 }
+
+                console.log("Game successfully created with host: " + username +" and game Id: " + gameId)
 
                 const con = clients[clientId].connection
                 con.send(JSON.stringify(payLoad))

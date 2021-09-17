@@ -265,6 +265,7 @@ ws.onmessage = message => {
         //clientId = response.clientId
         console.log("Game successfully created with host: " + response.game.host +" and game Id: " + response.game.id)
         game.preGame()
+        board.waitingToStart()
     }
 
     //join 
