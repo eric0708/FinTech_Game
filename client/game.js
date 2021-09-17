@@ -180,7 +180,7 @@ btnLogin.addEventListener('click', function (e) {
             "username": userName.value,
             "publickey": userPublicKey.value
         }
-        gmae.changeForm()
+        game.changeForm()
         ws.send(JSON.stringify(payLoad))
     }
 })
