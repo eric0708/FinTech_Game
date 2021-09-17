@@ -106,7 +106,7 @@ class QuestionsBoard{
         this.ans3 = answerC
         this.ans4 = answerD
     }
-    showQuestion(ques) {
+    showQuestion() {
 
     }
     // 顯示場次
@@ -278,7 +278,8 @@ ws.onmessage = message => {
             "gameId": gameId
         }
 
-        ws.send(JSON.stringify(payLoad))
+        setTimeout(ws.send(JSON.stringify(payLoad)), 3000)
+        
     }
 
     //start game
