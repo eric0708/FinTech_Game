@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Andada+Pro&display=swap');
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="text"><em>vs</em></div>
+    <div class="bg">
+        <div class="timer" id="timer" style="display: none;">
+          <canvas class="sec"></canvas>
+        </div>
+        <div class="title">金融科技研究社 <br><small>主題工作坊</small></div>
+        <div class="wrap">
+          <div class="person1">
+            <div class="grade_bar1">
+              <div class="points"></div>
+              <div class="grade1">1200</div>
+            </div>
+          </div><img class="img1" src="https://i.ibb.co/n7zkXCf/person1.png" alt=""/>
+          <div class="form_bg">
+            <form>
+                <input type="text" placeholder="Name" id="name">
+                <input type="text" placeholder="Public Key" id="publicKey"> 
+                <div class="buttons">
+                  <button id="btnRegister">New there</button>
+                  <button id="btnLogin">Already Login</button>
+                </div>
+            </form>
+            <form style="display: none;"> 
+              <h2>立即加入遊戲</h2>
+              <hr></hr>
+              <button id="creatRoom">創建房間</button>
+              <p>已經有房號了嗎？</p>
+              <input type="text" placeholder='輸入房號' id="roomNum"></input> 
+              <button id="joinRoom">加入遊戲</button>
+            </form>
+          </div>
+          <div class="questions" style="display: none;">
+            <form  id='questionBoard'>
+              <div class="question" id="question" style="display: none;">第一題</div>
+              <button id="choiceA" style="display: none;">A. skjfngjarkjnbknaerjna</button>
+              <button id="choiceB" style="display: none;">B. arjgajbrpeihbpioahpir</button>
+              <button id="choiceC" style="display: none;">C. akrjgnlajnrjnb</button>
+              <button id="choiceD" style="display: none;">D. aorpoiaprib[iane</button>
+            </form>
+          </div>
+          <img class="img2" src="https://i.ibb.co/8zzzbfD/person2.png" alt=""/>
+          <div class="person2"> 
+            <div class="grade_bar2">
+              <div class="points"></div>
+              <div class="grade2">360</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <script type="text/javascript" src="game.js"></script>
+</body>
+</html>
