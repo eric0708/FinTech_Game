@@ -278,7 +278,8 @@ ws.onmessage = message => {
             "gameId": gameId
         }
 
-        setTimeout(ws.send(JSON.stringify(payLoad)), 3000)
+        setTimeout(3000)
+        ws.send(JSON.stringify(payLoad))
         
     }
 
