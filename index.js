@@ -61,7 +61,7 @@ wsServer.on("request", request => {
                 "gameId": null
             }
 
-            console.log("player registered with username: " + username +" and public key: " + publickey)
+            console.log("Player registered with username: " + username +" and public key: " + publickey)
 
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
@@ -82,6 +82,8 @@ wsServer.on("request", request => {
                     "username": username,
                     "publickey": publickey
                 }
+
+                console.log("Player logined with username: " + username +" and public key: " + publickey)
             }
             else{
                 payLoad = {
@@ -90,9 +92,9 @@ wsServer.on("request", request => {
                     "username": username,
                     "publickey": publickey
                 }
-            }
 
-            console.log("player logined with username: " + username +" and public key: " + publickey)
+                console.log("Player with username: " + username +" and public key: " + publickey + " not registered")
+            }
 
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
