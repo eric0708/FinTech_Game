@@ -200,7 +200,7 @@ btnCreateRoom.addEventListener('click', function (e) {
 // 加入房間
 btnJoinRoom.addEventListener('click', function (e) {
     e.preventDefault()
-    if (roomNumber.value.length !== 0)
+    if (hostName.value.length !== 0)
     {
         const payLoad = {
             "method": "join",
