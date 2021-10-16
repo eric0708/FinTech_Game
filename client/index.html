@@ -10,21 +10,29 @@
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 </head>
 <body>
     <div class="text"><em>vs</em></div>
     <div class="bg">
-        <div class="timer" id="timer" style="display: none;">
-          <canvas class="sec"></canvas>
+        <div class="title">
+          <div class="txt" id="title">
+            台大金融科技暨監理科技研究社 <br><small>虛擬貨幣主題工作坊</small>
+          </div>
+          <div class="timer" id="timer" style="display: none;">
+            <canvas class="sec"></canvas>
+          </div>
         </div>
-        <div class="title">台大金融科技暨監理科技研究社 <br><small>虛擬貨幣主題工作坊</small></div>
         <div class="wrap">
           <div class="person1">
             <div class="grade_bar1">
               <div class="points"></div>
-              <div class="grade1">1200</div>
+              <div class="grade1">275</div>
             </div>
-          </div><img class="img1" src="https://i.ibb.co/n7zkXCf/person1.png" alt=""/>
+          </div>
+          <div class="pic1" data-text="">
+            <img class="img1" src="https://i.ibb.co/n7zkXCf/person1.png" alt=""/>
+          </div>
           <div class="form_bg">
             <form>
                 <input type="text" placeholder="Name" id="name">
@@ -46,17 +54,26 @@
           <div class="questions" style="display: none;">
             <form  id='questionBoard'>
               <div class="question" id="question" style="display: none;">第一題</div>
-              <button id="choiceA" style="display: none;">A. skjfngjarkjnbknaerjna</button>
-              <button id="choiceB" style="display: none;">B. arjgajbrpeihbpioahpir</button>
-              <button id="choiceC" style="display: none;">C. akrjgnlajnrjnb</button>
-              <button id="choiceD" style="display: none;">D. aorpoiaprib[iane</button>
+              <button id="choiceA" style="display: none;"></button>
+              <button id="choiceB" style="display: none;"></button>
+              <button id="choiceC" style="display: none;"></button>
+              <button id="choiceD" style="display: none;"></button>
             </form>
           </div>
-          <img class="img2" src="https://i.ibb.co/8zzzbfD/person2.png" alt=""/>
+          <div class="game_result" style="display: none;">
+            <div class="title">恭喜 吳柏賢<br>獲得這場比賽的勝利</div>
+            <i class="fa fa-trophy" aria-hidden="true"></i>
+            <i class="fa fa-frown-o" aria-hidden="true"></i>
+            <div class="price">您獲得＄1000顆熊熊幣</div>
+            <div class="rank">目前積分在大會中排名第3名</div>
+          </div>
+          <div class="pic2" data-text="">
+            <img class="img2" src="https://i.ibb.co/8zzzbfD/person2.png" alt=""/>
+          </div>
           <div class="person2"> 
             <div class="grade_bar2">
               <div class="points"></div>
-              <div class="grade2">360</div>
+              <div class="grade2">120</div>
             </div>
           </div>
         </div>

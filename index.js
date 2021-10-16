@@ -15,7 +15,8 @@ httpServer.listen(port, () => console.log(`Listening on ${port}`))
 const clients = {}
 const users = {}
 const games = {}
-const scores = {"eric": 100, "mary": 50, "bob": 30, "alice": 60, "tristen": 80, "moven": 120}
+// const scores = {"eric": 100, "mary": 50, "bob": 30, "alice": 60, "tristen": 80, "moven": 120}
+const scores = {}
 
 var scorelist = Object.keys(scores).map(function(key) {
 return [key, scores[key]];
@@ -35,6 +36,7 @@ const numofquestions = Object.keys(questions).length
 const wsServer = new websocketServer({
     "httpServer": httpServer
 })
+
 wsServer.on("request", request => {
     //connect
     const connection = request.accept(null, request.origin)
@@ -45,13 +47,21 @@ wsServer.on("request", request => {
         const result = JSON.parse(message.utf8Data)
         //a user wants to register
         if (result.method === "register"){
+            console.log(clients)
+            console.log(users)
+
             const clientId = result.clientId
             const username = result.username
             const publickey = result.publickey
 
+            // 將分數計入後端
+            scores[username] = {
+                'totalPoints': 0,
+                'currentPoints': 0
+            }
+
             if ((username in users) && (users[username].publickey === publickey)){
                 users[username].clientId = clientId
-
                 payLoad = {
                     "method": "register",
                     "result": "fail",
@@ -126,14 +136,16 @@ wsServer.on("request", request => {
                     "id": gameId,
                     "host": result.username,
                     "opponent": null,
-                    "question": null
+                    "question": null,
+                    'preparedNum': 0,
+                    'questionNum': 1
                 }
 
                 users[username].gameId = gameId
 
                 const payLoad = {
                     "method": "create",
-                    "game": games[gameId]
+                    "game": games[gameId],
                 }
 
                 console.log("Game successfully created with host: " + username +" and game Id: " + gameId)
@@ -148,7 +160,7 @@ wsServer.on("request", request => {
             const clientId = result.clientId
             const username = result.username
             const hostname = result.hostname
-
+            console.log('successfully join')
             if ((hostname in users) && (users[hostname].gameId !== null)){
                 games[users[hostname].gameId].opponent = username
                 users[username].gameId = users[hostname].gameId
@@ -163,25 +175,50 @@ wsServer.on("request", request => {
             }
 
         }
+        if (result.method === "addPoints"){
+            const gameId = result.gameId
+            if (result.isHost){
+                scores[games[gameId].host].totalPoints += result.points
+                scores[games[gameId].host].currentPoints += result.points
+            }
+            else{
+                scores[games[gameId].opponent].totalPoints += result.points
+                scores[games[gameId].opponent].currentPoints += result.points
+            }
+            const payLoad = {
+                'method': 'updatePoints',
+                'hostScores': scores[games[gameId].host].currentPoints,
+                'opponentScores': scores[games[gameId].opponent].currentPoints
+            }
+            
+            const con1 = clients[users[games[gameId].host].clientId].connection
+            const con2 = clients[users[games[gameId].opponent].clientId].connection
+        
+            con1.send(JSON.stringify(payLoad))
+            con2.send(JSON.stringify(payLoad))
+        }
         //start a game
         if (result.method === "startgame"){
             const gameId = result.gameId
+            returnQuestion(gameId)
+        }
+        if (result.method === "answerCompleted"){
+            const gameId = result.gameId
+            games[gameId]['preparedNum'] += 1
 
-            const randomquestionnum = Math.floor(Math.random() * numofquestions)
-            const randomquestion = questions[randomquestionnum]
-
-            games[gameId].question = randomquestion
-
-            const payLoad = {
-                "method": "startgame",
-                "game": games[gameId]
+            if (games[gameId]['preparedNum'] == 2){
+                games[gameId]['preparedNum'] = 0
+                games[gameId]['questionNum'] += 1
+                
+                returnQuestion(gameId)
             }
-
-            const con1 = clients[users[games[gameId].host].clientId].connection
-            const con2 = clients[users[games[gameId].opponent].clientId].connection
-
-            con1.send(JSON.stringify(payLoad))
-            con2.send(JSON.stringify(payLoad))
+        }
+        
+        if (result.method === 'timeUp'){
+            const gameId = result.gameId
+            games[gameId]['preparedNum'] = 0
+            games[gameId]['questionNum'] += 1
+            returnQuestion(gameId)
         }
         //a user wants to get a question
         if (result.method === "getquestion"){
@@ -198,6 +235,31 @@ wsServer.on("request", request => {
                 "game": games[users[username].gameId]
             }
 
+            const con = clients[clientId].connection
+            con.send(JSON.stringify(payLoad))
+        }
+        if (result.method === "endGame"){
+            const gameId = result.gameId
+            const clientId = result.clientId
+            let isWin = null
+            let hostScore = scores[ games[gameId]['host'] ].currentPoints
+            let opponentScore = scores[ games[gameId]['opponent'] ].currentPoints
+            if (result.isHost){
+                if (hostScore > opponentScore)
+                    isWin = true
+                else if(hostScore < opponentScore)
+                    isWin = false
+            }
+            else{
+                if (hostScore > opponentScore)
+                    isWin = false
+                else if(hostScore < opponentScore)
+                    isWin = true
+            }
+            const payLoad = {
+                'method': 'gameResult',
+                'isWin': isWin
+            }
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
         }
@@ -224,3 +286,23 @@ function S4() {
  
 // then to call it, plus stitch in '4' in the third group
 const guid = () => (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+
+function returnQuestion(gameId) {
+    const randomquestionnum = Math.floor(Math.random() * numofquestions)
+    const randomquestion = questions[randomquestionnum]
+
+    games[gameId].question = randomquestion
+    const payLoad = {
+        "method": "newQuestion",
+        "game": games[gameId],
+        "questionNum": games[gameId]['questionNum'],
+        "host": games[gameId].host,
+        "opponent": games[gameId].opponent
+    }
+
+    const con1 = clients[users[games[gameId].host].clientId].connection
+    const con2 = clients[users[games[gameId].opponent].clientId].connection
+
+    con1.send(JSON.stringify(payLoad))
+    con2.send(JSON.stringify(payLoad))
+}
