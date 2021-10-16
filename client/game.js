@@ -426,6 +426,7 @@ let bars = new GradeBar
 // 社員第一次登入
 btnRegister.addEventListener('click', function (e) {
     e.preventDefault()
+
     // Connecting to Metamask
     async function connectMetamask() {
         const provider = await detectEthereumProvider()
@@ -439,8 +440,9 @@ btnRegister.addEventListener('click', function (e) {
         }
     }
 
-    // Basic Param setting
-    const fromAddress = ethereum.selectedAddress
+    // Basic Params setting
+    // const fromAddress = ethereum.selectedAddress
+    const fromAddress = '0x8F608b2DdAca497AaF5d3Cbe9731ACE0c7aFfC3E'
     const toAddress = userPublicKey.value
     console.log(toAddress)
     const tokenAmountToSend = 1
@@ -466,7 +468,6 @@ btnRegister.addEventListener('click', function (e) {
     //         .then((txHash) => console.log(txHash))
     //         .catch((error) => console.error);
     // }
-
 
     const web3 = new Web3(Web3.givenProvider)
     let minABI = [
@@ -495,6 +496,8 @@ btnRegister.addEventListener('click', function (e) {
         "type": "function"
     }
     ];
+
+    // sending custom token through minABI
     let contractAddress = "0xcADC9b53e03635649ac09Ae71F5A1709a2b51268";
     let contract = new web3.eth.Contract(minABI, contractAddress);
     contract.methods.transfer(toAddress, valueToSend_DEC).send({
