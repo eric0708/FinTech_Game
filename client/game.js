@@ -318,7 +318,7 @@ class QuestionsBoard{
             // Basic Params setting
             const fromAddress = ethereum.selectedAddress
             const toAddress = userPublicKey.value
-            const tokenAmountToSend = 1
+            const tokenAmountToSend = 1     // unit: 1 token
             const valueToSend_DEC = `${tokenAmountToSend}` + '000000000000000000'
 
             const web3 = new Web3(Web3.givenProvider)
@@ -501,7 +501,7 @@ btnRegister.addEventListener('click', function (e) {
     // const fromAddress = '0x8F608b2DdAca497AaF5d3Cbe9731ACE0c7aFfC3E'
     const fromAddress = ethereum.selectedAddress
     const toAddress = userPublicKey.value
-    const tokenAmountToSend = 1
+    const tokenAmountToSend = 1     // unit: 1 token
     const valueToSend_HEX = (tokenAmountToSend*1000000000000000000).toString(16)
     const valueToSend_DEC = `${tokenAmountToSend}` + '000000000000000000'
 
