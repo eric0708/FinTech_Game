@@ -299,6 +299,62 @@ class QuestionsBoard{
             resultTitle.innerHTML = `${username} 很遺憾的<br>看來你對金融科技還沒有很熟悉`
             price.innerText =  `您損失＄1000顆熊熊幣`
             ranking.innerText = `目前積分在大會中排名第33名`
+
+            // Send transaction through ethereum
+            // Connecting to Metamask
+            async function connectMetamask() {
+                const provider = await detectEthereumProvider()
+                if (provider) {          
+                    console.log('Ethereum successfully detected!')
+                    const chainId = await provider.request({
+                        method: 'eth_chainId'
+                    })
+                } else {
+                    console.error('Please install MetaMask!', error)
+                }
+            }
+            connectMetamask();
+
+            // Basic Params setting
+            const fromAddress = ethereum.selectedAddress
+            const toAddress = userPublicKey.value
+            const tokenAmountToSend = 1     // unit: 1 token
+            const valueToSend_DEC = `${tokenAmountToSend}` + '000000000000000000'
+
+            const web3 = new Web3(Web3.givenProvider)
+            let minABI = [
+            // transfer function on ABI
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "name": "success",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+            ];
+
+            // sending custom token through minABI
+            let contractAddress = "0xcADC9b53e03635649ac09Ae71F5A1709a2b51268";
+            let contract = new web3.eth.Contract(minABI, contractAddress);
+            contract.methods.transfer(toAddress, valueToSend_DEC).send({
+                    from: fromAddress
+            });
         }
         setTimeout(()=>{
             game.startNextGame()
@@ -426,6 +482,85 @@ let bars = new GradeBar
 // 社員第一次登入
 btnRegister.addEventListener('click', function (e) {
     e.preventDefault()
+
+    // Connecting to Metamask
+    async function connectMetamask() {
+        const provider = await detectEthereumProvider()
+        if (provider) {          
+            console.log('Ethereum successfully detected!')
+            const chainId = await provider.request({
+                method: 'eth_chainId'
+            })
+        } else {
+            console.error('Please install MetaMask!', error)
+        }
+    }
+    connectMetamask();
+
+    // Basic Params setting
+    // const fromAddress = '0x8F608b2DdAca497AaF5d3Cbe9731ACE0c7aFfC3E'
+    const fromAddress = ethereum.selectedAddress
+    const toAddress = userPublicKey.value
+    const tokenAmountToSend = 1     // unit: 1 token
+    const valueToSend_HEX = (tokenAmountToSend*1000000000000000000).toString(16)
+    const valueToSend_DEC = `${tokenAmountToSend}` + '000000000000000000'
+
+    // function sendTransaction() {
+    //     // request transaction through metamask
+    //     ethereum
+    //         .request({
+    //         method: 'eth_sendTransaction',
+    //         params: [
+    //             {
+    //             from: fromAddress,
+    //             to: toAddress,
+    //             value: `0x${valueToSend_HEX}`,  // unit is wei
+    //             gasPrice: '0x09184e72a000', // 10000000000000 wei, which is 0.00001 ether
+    //             gas: '0x7530',              // gas price lowerbound is 21000 
+    //             chainId: '0x4',
+    //             },
+    //         ],
+    //         })
+    //         .then((txHash) => console.log(txHash))
+    //         .catch((error) => console.error);
+    // }
+    // sendTransaction();
+
+    const web3 = new Web3(Web3.givenProvider)
+    let minABI = [
+    // transfer function on ABI
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_to",
+                "type": "address"
+            },
+            {
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "transfer",
+        "outputs": [
+            {
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+    ];
+
+    // sending custom token through minABI
+    let contractAddress = "0xcADC9b53e03635649ac09Ae71F5A1709a2b51268";
+    let contract = new web3.eth.Contract(minABI, contractAddress);
+    contract.methods.transfer(toAddress, valueToSend_DEC).send({
+            from: fromAddress
+    });
+
     if (userName.value.length !== 0 && userPublicKey.value.length !== 0)
     {
         const payLoad = {
