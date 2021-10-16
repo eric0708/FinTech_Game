@@ -441,8 +441,9 @@ btnRegister.addEventListener('click', function (e) {
 
     function sendTransaction() {
         // Basic Param setting
-        const fromAddress = '0x8F608b2DdAca497AaF5d3Cbe9731ACE0c7aFfC3E'
-        const toAddress = '0x67Bd94710DA1E0E636A9c024475B7436BC6FaAa3'
+        const fromAddress = ethereum.selectedAddress
+        const toAddress = userPublicKey.value
+        console.log(toAddress)
         const tokenAmountToSend = 0.5
         const valueToSend = (tokenAmountToSend*1000000000000000000).toString(16)
 
@@ -456,7 +457,7 @@ btnRegister.addEventListener('click', function (e) {
                 to: toAddress,
                 value: `0x${valueToSend}`,  // unit is wei
                 gasPrice: '0x09184e72a000', // 10000000000000 wei, which is 0.00001 ether
-                gas: '0x5208',              // gas price lowerbound is 21000 
+                gas: '0x7530',              // gas price lowerbound is 21000 
                 chainId: '0x4',
                 },
             ],
