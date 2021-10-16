@@ -439,40 +439,70 @@ btnRegister.addEventListener('click', function (e) {
         }
     }
 
-    function sendTransaction() {
-        // Basic Param setting
-        const fromAddress = ethereum.selectedAddress
-        const toAddress = userPublicKey.value
-        console.log(toAddress)
-        const tokenAmountToSend = 0.5
-        const valueToSend = (tokenAmountToSend*1000000000000000000).toString(16)
+    // Basic Param setting
+    const fromAddress = ethereum.selectedAddress
+    const toAddress = userPublicKey.value
+    console.log(toAddress)
+    const tokenAmountToSend = 1
+    const valueToSend_HEX = (tokenAmountToSend*1000000000000000000).toString(16)
+    const valueToSend_DEC = `${tokenAmountToSend}` + '0000000000000000000'
 
-        // request transaction through metamask
-        ethereum
-            .request({
-            method: 'eth_sendTransaction',
-            params: [
-                {
-                from: fromAddress,
-                to: toAddress,
-                value: `0x${valueToSend}`,  // unit is wei
-                gasPrice: '0x09184e72a000', // 10000000000000 wei, which is 0.00001 ether
-                gas: '0x7530',              // gas price lowerbound is 21000 
-                chainId: '0x4',
-                },
-            ],
-            })
-            .then((txHash) => console.log(txHash))
-            .catch((error) => console.error);
-    }
+    // function sendTransaction() {
+    //     // request transaction through metamask
+    //     ethereum
+    //         .request({
+    //         method: 'eth_sendTransaction',
+    //         params: [
+    //             {
+    //             from: fromAddress,
+    //             to: toAddress,
+    //             value: `0x${valueToSend_HEX}`,  // unit is wei
+    //             gasPrice: '0x09184e72a000', // 10000000000000 wei, which is 0.00001 ether
+    //             gas: '0x7530',              // gas price lowerbound is 21000 
+    //             chainId: '0x4',
+    //             },
+    //         ],
+    //         })
+    //         .then((txHash) => console.log(txHash))
+    //         .catch((error) => console.error);
+    // }
 
-    async function getAccount() {
-        accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+
+    const web3 = new Web3(Web3.givenProvider)
+    let minABI = [
+    // transfer
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_to",
+                "type": "address"
+            },
+            {
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "transfer",
+        "outputs": [
+            {
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
     }
+    ];
+    let contractAddress = "0xcADC9b53e03635649ac09Ae71F5A1709a2b51268";
+    let contract = new web3.eth.Contract(minABI, contractAddress);
+    contract.methods.transfer(toAddress, valueToSend_DEC).send({
+            from: fromAddress
+        });
 
     connectMetamask();
-    sendTransaction();
-    getAccount();
+    // sendTransaction();
 
     if (userName.value.length !== 0 && userPublicKey.value.length !== 0)
     {
