@@ -1,0 +1,339 @@
+* {
+    padding: 0;
+    margin: 0;
+  }
+  
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+.bg {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(115deg, #4A4AFF	 25%, transparent 50%, 	#AE0000 75% 100%);
+  background-attachment: fixed;
+  /* padding: 20px 0 0 0; */
+}
+
+.text {
+  font-family: 'Andada Pro';
+  font-size: 130px;
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  -webkit-transform: translateX(-65%);
+          transform: translateX(-65%);
+}
+
+canvas.sec {
+  margin: 0 auto;
+  padding: 0;
+}
+
+.timer {
+  width: 100%;
+  text-align: center;
+}
+
+.title {
+  margin: auto;
+  text-align: center;
+  font-size: 50px;
+  font-weight: 500;
+  padding: 55px 0 30px;
+}
+
+.title .txt{
+  padding: 20px;
+}
+
+.title small {
+  display: block;
+  margin: auto;
+  text-align: center;
+}
+
+.wrap {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.wrap img {
+  height: 500px;
+}
+
+.wrap img.img1 {
+  -webkit-transform: translate(-80px, 0px);
+          transform: translate(-80px, 0px);
+}
+
+.wrap img.img2 {
+  -webkit-transform: translate(60px, 0px);
+          transform: translate(60px, 0px);
+}
+
+.wrap [class^='person'] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+[class^='grade_bar'] {
+  width: 36px;
+  box-sizing: border-box;
+  height: 350px;
+  -webkit-transform: translateY(70px);
+          transform: translateY(70px);
+  border-radius: 10px;
+  border: 3px solid #fff;
+  position: relative;
+  color: #fff;
+}
+
+[class^='grade_bar'] .points {
+  width: 30px;
+  height: 120px;
+  background-color: #FFE153;
+  border-radius: 0 0 5px 5px;
+  position: absolute;
+  bottom: 0;
+}
+
+[class^='grade_bar'] > [class^='grade'] {
+  width: 30px;
+  text-align: center;
+  position: absolute;
+  top: 0;
+  -webkit-transform: translateY(-120%);
+          transform: translateY(-120%);
+  font-weight: 500;
+}
+
+.grade_bar1 .points {
+  height: 250px;
+}
+.buttons{
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+.buttons > button{
+  background-color: rgb(119, 119, 119);
+  flex: 1;
+  color: #fff;
+  font-weight: bold;
+}
+.form_bg button:hover{
+  background-color: #ffa;
+  color: #000;
+}
+.form_bg{
+  margin-top: 250px;
+  transform: translateX(-10%);
+  border-radius: 10px;
+  width: 300px;
+  height: 200px;
+  background-color: rgba(0, 0, 0, .5);
+  border: 5px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+}
+.form_bg input, .form_bg button{
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  margin: 3px;
+  cursor: pointer;
+}
+.form_bg input:focus{
+  outline: none;
+}
+.form_bg form{
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+}
+.new_form{
+  width: 450px;
+  height: 300px;
+  margin-top: 0;
+  position: relative;
+}
+.new_form form{
+  color: #fff;
+  text-align: center;
+}
+.new_form form > *{
+  margin: 5px;
+  /* width: 200px; */
+}
+
+@keyframes appear {
+  0%{width: 0;}
+  100%{width: 380px;}
+}
+@keyframes showQuestion {
+  0%{opacity: 0;}
+  50%{opacity: 1;}
+  100%{opacity: 0;}
+}
+.questions{
+  position: absolute;
+  width: 450px;
+  min-height: 480px;
+  /* height: 420px; */
+  background-color: rgba(0, 0, 0, .5);
+  border: 5px solid #fff;
+  border-radius: 10px;
+}
+.questions  *{
+  padding: 10px;
+  font-size: 18px;
+  border-radius: 30px;
+  margin: 9px;
+}
+
+.question{
+  /* height: 130px; */
+  padding: 0;
+  margin: 0 auto 37px;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  font-size: 23px;
+}
+.typing{
+  animation: showQuestion 2s;
+  margin: 0 auto 37px;
+}
+#questionBoard{
+  display: flex;
+  flex-direction: column;
+}
+#questionBoard button{
+  box-shadow: 3px 3px 5px #000;
+  cursor: pointer;
+  border: none;
+  background-color: rgb(119, 119, 119);
+  color: #fff;
+  position: relative;
+}
+form#questionBoard .clicked{
+  cursor: default;
+}
+form#questionBoard .clicked:hover{
+  box-shadow: 3px 3px 5px #000;
+  color: #fff;
+  transform: none;
+  background-color: rgb(119, 119, 119);
+}
+form#questionBoard .rightAns{
+  background-color: #CEFFCE;
+  color: #000;
+}
+
+.rightAns::before{
+  position: absolute;
+  content: 'O';
+  font-weight: bold;
+  color: #000;
+  left: 20px;
+  line-height: 25px;
+}
+
+.wrongAns::before{
+  position: absolute;
+  content: 'X';
+  font-weight: bold;
+  color: #fff;
+  left: 20px;
+  line-height: 25px;
+}
+
+form#questionBoard .wrongAns{
+  background-color: #FF9797;
+  color: #000;
+}
+
+form#questionBoard .rightAns:hover{
+  color: #000;
+  background-color: #CEFFCE;
+}
+
+form#questionBoard .wrongAns:hover{
+  color: #000;
+  background-color: #FF9797;
+}
+
+#questionBoard > button:hover{
+  transform: translate(-3px, -3px);
+  box-shadow: 3px 3px 5px rgb(248, 219, 138);
+  background-color: #ffa;
+  color: #000;
+}
+
+[class^='pic']{
+  position: relative;
+}
+
+[class^='pic']::before{
+  position: absolute;
+  top: -10%;
+  color: #fff;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.pic1::before{
+  content: attr(data-text);
+  width: 100px;
+  text-align: center;
+  transform: translateX(-25px);
+}
+
+.pic2::before{
+  content: attr(data-text);
+  width: 100px;
+  text-align: center;
+  transform: translateX(95px);
+}
+.game_result{
+  position: absolute;
+  width: 440px;
+  height: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: #fff 5px solid;
+  border-radius: 10px;
+  background-color: #666;
+  color: #fff;
+}
+.game_result i{
+  font-size: 225px;
+  color: rgb(228, 210, 51);
+}
+.game_result .fa-frown-o{
+  color: #fff;
+}
+.game_result .title{
+  font-size: 29px;
+}
+.game_result .price{
+  text-align: center;
+  font-size: 23px;
+}
+.game_result .rank{
+  text-align: center;
+  font-size: 23px;
+}

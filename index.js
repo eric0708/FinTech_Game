@@ -45,6 +45,10 @@ wsServer.on("request", request => {
     connection.on("message", message => {
         // I have received a message from the client
         const result = JSON.parse(message.utf8Data)
+        // Record Host Client ID
+        if (result.method === "hosting"){
+            hostID = result.clientId
+        }
         //a user wants to register
         if (result.method === "register"){
             console.log(clients)
@@ -90,6 +94,9 @@ wsServer.on("request", request => {
 
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
+
+            // Send message to leadBoard
+            sendBoardMessage()
         }
         //a user wants to login
         if (result.method === "login"){
@@ -245,16 +252,31 @@ wsServer.on("request", request => {
             let hostScore = scores[ games[gameId]['host'] ].currentPoints
             let opponentScore = scores[ games[gameId]['opponent'] ].currentPoints
             if (result.isHost){
-                if (hostScore > opponentScore)
+                if (hostScore > opponentScore){
                     isWin = true
-                else if(hostScore < opponentScore)
+                    scores[ games[gameId].host ].totalPoints += 1;
+                }
+                else if(hostScore < opponentScore){
                     isWin = false
+                    scores[ games[gameId].host ].totalPoints -= 1;
+                }
             }
             else{
-                if (hostScore > opponentScore)
+                if (hostScore > opponentScore){
                     isWin = false
-                else if(hostScore < opponentScore)
+                    scores[ games[gameId].opponent ].totalPoints -= 1;
+                }
+                else if(hostScore < opponentScore){
                     isWin = true
+                    scores[ games[gameId].opponent ].totalPoints += 1;
+                }
+            }
+            games[gameId].modifiedTime += 1;
+            if (games[gameId].modifiedTime == 2){
+                scores[ games[gameId].host ].currentPoints = 0;
+                scores[ games[gameId].opponent ].currentPoints = 0;
+                // Send message to leadBoard
+                sendBoardMessage()
             }
             const payLoad = {
                 'method': 'gameResult',
@@ -305,4 +327,15 @@ function returnQuestion(gameId) {
 
     con1.send(JSON.stringify(payLoad))
     con2.send(JSON.stringify(payLoad))
+}
+
+function sendBoardMessage(){
+    if (hostID){
+        payLoad = {
+            "method": "competitors",
+            "data": scores
+        }
+        const con = clients[hostID].connection
+        con.send(JSON.stringify(payLoad))
+    }
 }

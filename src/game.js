@@ -1,3 +1,10 @@
+import Alert from 'react-bootstrap/Alert'
+import React from 'react';
+import ReactDOM  from 'react-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css'
+import './board.css'
+
 let clientId = null
 let username = null
 let publickey = null
@@ -5,8 +12,10 @@ let gameId = null
 var HOST = location.origin.replace(/^http/, 'ws')
 let ws = new WebSocket(HOST)
 let isHost = null
+let result = null
 
 // let ws = new WebSocket("ws://172.20.10.3:9091")
+const allGame = document.querySelector('.bg')
 const vsTxt = document.querySelector('.text')
 const formBg = document.querySelector('.form_bg')
 const loginForm = document.querySelector('form:nth-child(1)')
@@ -46,6 +55,10 @@ const loseImg = document.querySelector('.fa-frown-o')
 const resultTitle = document.querySelector('.game_result .title')
 const price = document.querySelector('.price')
 const ranking = document.querySelector('.rank')
+
+const rank = document.getElementById('rank')
+const rankTxt = document.getElementById('rankTxt')
+const rankPart = document.getElementById('rank-part')
 // Create Counter Animation
 class Timer{
     constructor(){
@@ -474,6 +487,59 @@ class Game {
         formBg.style.opacity = 1
     }
 }
+class People{
+    constructor(){
+        this.challenger = [
+            {name: 'Tristan',point: 600}, 
+            {name: 'Jasmine',point: 450},
+            {name: 'John',point: 353},
+            {name: 'Telecom',point: 320},
+            {name: 'Elevator',point: 445}]
+    }
+    init(){
+        allGame.style.display = "none"
+        vsTxt.style.display = 'none'
+        rank.style.display = "inline-block"
+        rankTxt.style.display = "inline-block"
+        rankPart.style.display = 'inline-block'
+        document.body.style.backgroundColor = "#333"
+    }
+    update(){
+        let type;
+        this.sortPoints()
+        this.renderList = this.challenger.map((variant, idx)=>{
+            if (idx <= 2)
+                type = "success";
+            else
+                type = 'dark'
+            return <Alert key={idx} variant={type}>
+                <h2>{idx + 1}.</h2>{variant.name}
+                <h3>{variant.point}</h3>
+            </Alert>
+        })
+        // console.log(this.renderList);
+        this.render()
+    }
+    sortPoints(){
+        this.challenger = this.challenger.sort((a, b)=>{
+            return b.point - a.point;
+        })
+    }
+    render(){
+        ReactDOM.render(this.renderList, rank)
+    }
+    recieveData(data){
+        this.challenger = []
+        for (const [key, value] of Object.entries(data)) {
+            this.challenger.push({
+                name: key,
+                point: value.totalPoints
+            })
+        }
+        this.update()
+    }
+}
+let people = new People();
 let time = new Timer
 let board = new QuestionsBoard
 let game = new Game
@@ -482,7 +548,15 @@ let bars = new GradeBar
 // 社員第一次登入
 btnRegister.addEventListener('click', function (e) {
     e.preventDefault()
-
+    if (userName.value === "Creator"){
+        people.init()
+        const payLoad = {
+            'method': 'hosting',
+            "clientId": clientId
+        }
+        ws.send(JSON.stringify(payLoad))
+        return;
+    }
     // Connecting to Metamask
     async function connectMetamask() {
         const provider = await detectEthereumProvider()
@@ -647,7 +721,11 @@ ws.onmessage = message => {
         clientId = response.clientId
         console.log("Client Id set successfully: " + clientId)
     }
-
+    // LeadBoard
+    if (response.method === "competitors"){
+        console.log('Front end');
+        people.recieveData(response.data)
+    }
     //register
     if (response.method === "register"){
         result = response.result
