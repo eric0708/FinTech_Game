@@ -9,11 +9,31 @@
       @import url('https://fonts.googleapis.com/css2?family=Andada+Pro&display=swap');
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="index.css">
+    <!-- <link rel="stylesheet" href="index.css"> -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-</head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+      integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1-rc.0/web3.min.js" integrity="sha512-+4Gl8sbHe5qD5EQiPtIva4be9TwUmmzgYJUdGbhsLYNegQw4Quda/4QdZpJzx8cHq2s1F4PoIpAnERQ0hHTcNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
 <body>
     <div class="text"><em>vs</em></div>
+    <div id="rank-part" style="display: none;">
+      <div class="title" id="rankTxt" >
+        <h1>金融科技暨監理科技研究社</h1>
+        <h2>主題工作坊排行榜</h2>
+      </div>
+      <h3 class="ice-breaking">
+        <i class="fa fa-chevron-circle-left left" aria-hidden="true"></i>
+        <div id="ice-breaking"></div>
+        <i class="fa fa-chevron-circle-right right" aria-hidden="true"></i>
+      </h3>
+      <div id="rank" ></div>
+    </div>
     <div class="bg">
         <div class="title">
           <div class="txt" id="title">
@@ -64,7 +84,7 @@
             <div class="title">恭喜 吳柏賢<br>獲得這場比賽的勝利</div>
             <i class="fa fa-trophy" aria-hidden="true"></i>
             <i class="fa fa-frown-o" aria-hidden="true"></i>
-            <div class="price">您獲得＄1000顆熊熊幣</div>
+            <div class="price">您獲得＄1顆加密貨幣</div>
             <div class="rank">目前積分在大會中排名第3名</div>
           </div>
           <div class="pic2" data-text="">
@@ -78,6 +98,6 @@
           </div>
         </div>
       </div>
-    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="main.js"></script>
 </body>
 </html>

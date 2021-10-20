@@ -10,6 +10,7 @@ const websocketServer = require("websocket").server
 const port = process.env.PORT || 3000
 
 const httpServer = http.createServer(app)
+
 httpServer.listen(port, () => console.log(`Listening on ${port}`))
 //hashmap clients
 const clients = {}
@@ -17,6 +18,7 @@ const users = {}
 const games = {}
 // const scores = {"eric": 100, "mary": 50, "bob": 30, "alice": 60, "tristen": 80, "moven": 120}
 const scores = {}
+let hostID = null
 
 var scorelist = Object.keys(scores).map(function(key) {
 return [key, scores[key]];
@@ -26,8 +28,8 @@ scorelist.sort(function(first, second) {
 return second[1] - first[1];
 });
 // Create a new array with only the first 5 items
-console.log(scorelist.slice(0, 5));
-console.log(scorelist[0])
+// console.log(scorelist.slice(0, 5));
+// console.log(scorelist[0])
 
 //get questions
 const questions = require(__dirname + "/questions.json")
@@ -45,18 +47,20 @@ wsServer.on("request", request => {
     connection.on("message", message => {
         // I have received a message from the client
         const result = JSON.parse(message.utf8Data)
+        // Record Host Client ID
+        if (result.method === "hosting"){
+            hostID = result.clientId
+        }
+
         //a user wants to register
         if (result.method === "register"){
-            console.log(clients)
-            console.log(users)
-
             const clientId = result.clientId
             const username = result.username
             const publickey = result.publickey
 
             // 將分數計入後端
             scores[username] = {
-                'totalPoints': 0,
+                'totalPoints': 50,
                 'currentPoints': 0
             }
 
@@ -87,9 +91,12 @@ wsServer.on("request", request => {
 
                 console.log("Player registered with username: " + username +" and public key: " + publickey)
             }
-
+            console.log('---------------', clients[clientId]);
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
+
+            // Send message to leadBoard
+            sendBoardMessage()
         }
         //a user wants to login
         if (result.method === "login"){
@@ -138,7 +145,8 @@ wsServer.on("request", request => {
                     "opponent": null,
                     "question": null,
                     'preparedNum': 0,
-                    'questionNum': 1
+                    'questionNum': 1,
+                    'modifiedTime': 0
                 }
 
                 users[username].gameId = gameId
@@ -178,11 +186,11 @@ wsServer.on("request", request => {
         if (result.method === "addPoints"){
             const gameId = result.gameId
             if (result.isHost){
-                scores[games[gameId].host].totalPoints += result.points
+                // scores[games[gameId].host].totalPoints += result.points
                 scores[games[gameId].host].currentPoints += result.points
             }
             else{
-                scores[games[gameId].opponent].totalPoints += result.points
+                // scores[games[gameId].opponent].totalPoints += result.points
                 scores[games[gameId].opponent].currentPoints += result.points
             }
             const payLoad = {
@@ -245,16 +253,31 @@ wsServer.on("request", request => {
             let hostScore = scores[ games[gameId]['host'] ].currentPoints
             let opponentScore = scores[ games[gameId]['opponent'] ].currentPoints
             if (result.isHost){
-                if (hostScore > opponentScore)
+                if (hostScore > opponentScore){
                     isWin = true
-                else if(hostScore < opponentScore)
+                    scores[ games[gameId].host ].totalPoints += 1;
+                }
+                else if(hostScore < opponentScore){
                     isWin = false
+                    scores[ games[gameId].host ].totalPoints -= 1;
+                }
             }
             else{
-                if (hostScore > opponentScore)
+                if (hostScore > opponentScore){
                     isWin = false
-                else if(hostScore < opponentScore)
+                    scores[ games[gameId].opponent ].totalPoints -= 1;
+                }
+                else if(hostScore < opponentScore){
                     isWin = true
+                    scores[ games[gameId].opponent ].totalPoints += 1;
+                }
+            }
+            games[gameId].modifiedTime += 1;
+            if (games[gameId].modifiedTime == 2){
+                scores[ games[gameId].host ].currentPoints = 0;
+                scores[ games[gameId].opponent ].currentPoints = 0;
+                // Send message to leadBoard
+                sendBoardMessage()
             }
             const payLoad = {
                 'method': 'gameResult',
@@ -305,4 +328,15 @@ function returnQuestion(gameId) {
 
     con1.send(JSON.stringify(payLoad))
     con2.send(JSON.stringify(payLoad))
+}
+
+function sendBoardMessage(){
+    if (hostID){
+        payLoad = {
+            "method": "competitors",
+            "data": scores
+        }
+        const con = clients[hostID].connection
+        con.send(JSON.stringify(payLoad))
+    }
 }
