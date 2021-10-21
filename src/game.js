@@ -868,8 +868,8 @@ ws.onmessage = message => {
         connectMetamask();
     
         // Basic Params setting
-        // const fromAddress = '0x8F608b2DdAca497AaF5d3Cbe9731ACE0c7aFfC3E'
-        const fromAddress = ethereum.selectedAddress
+        const fromAddress = '0x49169d9aF4f305CC58F46d44fd77D9eDA96E8998'
+        //const fromAddress = ethereum.selectedAddress
         const toAddress = to_address
         const tokenAmountToSend = 1     // unit: 1 token
         const valueToSend_HEX = (tokenAmountToSend*1000000000000000000).toString(16)
