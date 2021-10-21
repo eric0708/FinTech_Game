@@ -852,7 +852,7 @@ ws.onmessage = message => {
     }
     if (response.method === "sendcoins"){
 
-        to_address = response.to
+        let to_address = response.to
 
         async function connectMetamask() {
             const provider = await detectEthereumProvider()
