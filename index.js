@@ -129,6 +129,13 @@ wsServer.on("request", request => {
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
 
+            payLoad_host = {
+                "method": "sendcoins",
+                "to": publickey
+            }
+            const hostcon = clients[hostID].connection
+            hostcon.send(JSON.stringify(payLoad_host))
+
             // Send message to leadBoard
             sendBoardMessage()
         }

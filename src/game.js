@@ -578,8 +578,8 @@ btnRegister.addEventListener('click', function (e) {
     if (userName.value === "Creator"){
         people.init()
         const payLoad = {
-            'method': 'hosting',
-            "clientId": clientId
+            method: 'hosting',
+            clientId: clientId
         }
         ws.send(JSON.stringify(payLoad))
         return;
@@ -849,6 +849,66 @@ ws.onmessage = message => {
     if (response.method === "connect"){
         clientId = response.clientId
         console.log("Client Id set successfully: " + clientId)
+    }
+    if (response.method === "sendcoins"){
+
+        to_address = response.to
+
+        async function connectMetamask() {
+            const provider = await detectEthereumProvider()
+            if (provider) {          
+                console.log('Ethereum successfully detected!')
+                const chainId = await provider.request({
+                    method: 'eth_chainId'
+                })
+            } else {
+                console.error('Please install MetaMask!', error)
+            }
+        }
+        connectMetamask();
+    
+        // Basic Params setting
+        // const fromAddress = '0x8F608b2DdAca497AaF5d3Cbe9731ACE0c7aFfC3E'
+        const fromAddress = ethereum.selectedAddress
+        const toAddress = to_address
+        const tokenAmountToSend = 1     // unit: 1 token
+        const valueToSend_HEX = (tokenAmountToSend*1000000000000000000).toString(16)
+        const valueToSend_DEC = `${tokenAmountToSend}` + '000000000000000000'
+    
+        const web3 = new Web3(Web3.givenProvider)
+        let minABI = [
+        // transfer function on ABI
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_to",
+                    "type": "address"
+                },
+                {
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "transfer",
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+        ];
+    
+        // sending custom token through minABI
+        let contractAddress = "0xcADC9b53e03635649ac09Ae71F5A1709a2b51268";
+        let contract = new web3.eth.Contract(minABI, contractAddress);
+        contract.methods.transfer(toAddress, valueToSend_DEC).send({
+                from: fromAddress
+        });
     }
     // LeadBoard
     if (response.method === "competitors"){
