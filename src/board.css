@@ -1,33 +1,28 @@
 html, body{
     width: 100%;
     height: 100%;
-    /* background-color: #333; */
     text-align: center;
 }
 
 #rank-part{
     width: 100%;
-    /* position: relative; */
 }
 
 #rank-part i{
-    /* position: absolute; */
-    font-size: 25px;
+    font-size: 33px;
 }
 
 #rank-part .left{
     padding-left: 20%;
-    /* left: 25%; */
 }
 
 #rank-part .right{
     padding-right: 20%;
-    /* right: 25%; */
 }
 
 #rank-part .title{
     color: #fff;
-    margin: 40px auto;
+    margin: 40px auto 20px;
 }
 #rank{
     font-size: 21px;
@@ -52,4 +47,30 @@ html, body{
     color: #fff;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.ice-breaking i{
+    color: rgba(255, 255, 255, .7);
+}
+
+.ice-breaking i.left{
+    cursor: not-allowed;
+}
+
+.ice-breaking i.right{
+    cursor: pointer;
+}
+
+.ice-breaking i.right:hover{
+    color: #fff;
+}
+
+.alert.yellow{
+    background-color: #ffa;
+}
+
+.alert.grey{
+    background-color: grey;
 }

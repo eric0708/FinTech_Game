@@ -56,9 +56,12 @@ const resultTitle = document.querySelector('.game_result .title')
 const price = document.querySelector('.price')
 const ranking = document.querySelector('.rank')
 
+// LeadBoard
 const rank = document.getElementById('rank')
 const rankTxt = document.getElementById('rankTxt')
 const rankPart = document.getElementById('rank-part')
+const ice_breaking_problem = document.getElementById('ice-breaking')
+const rightArr = document.querySelector('.ice-breaking .right')
 // Create Counter Animation
 class Timer{
     constructor(){
@@ -99,11 +102,14 @@ class Timer{
     }
     ifTimeUp(){
         if (this.run >= 10){
-            this.run = 0
-            this.count = 0
             this.timeUp = true
-            this.runStatus = false
+            this.isTimeUp()
         }
+    }
+    isTimeUp(){
+        this.runStatus = false
+        this.count = 0
+        this.run = 0
     }
     reset(){
         this.runStatus = false
@@ -127,6 +133,9 @@ class Timer{
             this.animateEffect(this.count)
             // 設定圓弧長度
             this.count += 0.0333
+        }
+        else{
+            this.animateEffect(this.count)
         }
     }
 }
@@ -181,6 +190,12 @@ class GradeBar{
     settingName(hostName, opponentName){
         this.hostNameControl.setAttribute('data-text', hostName)
         this.opponentNameControl.setAttribute('data-text', opponentName)
+    }
+    reset(){
+        this.hostPoint = 0
+        this.opponentPoint = 0
+        this.setBar()
+        this.setPoints()
     }
 }
 
@@ -296,11 +311,11 @@ class QuestionsBoard{
     }
     showGameResult(isWin){
         showElement('flex', this.result)
-        hideElement(this.winImg)
         if (isWin){
             resultTitle.innerHTML = `恭喜 ${username}<br>獲得這場比賽的勝利`
-            price.innerText =  `您獲得＄1000顆熊熊幣`
+            price.innerText =  `您獲得＄1顆加密貨幣`
             ranking.innerText = `目前積分在大會中排名第3名`
+            hideElement(this.loseImg)
         }
         // 平手情況
         else if(isWin == null){
@@ -312,7 +327,7 @@ class QuestionsBoard{
             resultTitle.innerHTML = `${username} 很遺憾的<br>看來你對金融科技還沒有很熟悉`
             price.innerText =  `您損失＄1000顆熊熊幣`
             ranking.innerText = `目前積分在大會中排名第33名`
-
+            hideElement(this.winImg)
             // Send transaction through ethereum
             // Connecting to Metamask
             async function connectMetamask() {
@@ -372,7 +387,7 @@ class QuestionsBoard{
         setTimeout(()=>{
             game.startNextGame()
             hideElement(gameResultBoard)
-        }, 10000)
+        }, 5000)
     }
 }
 
@@ -380,7 +395,7 @@ class Game {
     constructor(){
         this.gameActive = false
         this.gameId = null
-        this.questionNum = 5
+        this.questionNum = 2
         this.timeRunner = null
     }
     // 表單更換流程
@@ -439,8 +454,8 @@ class Game {
         time.reset()
     }
     updateGame(){
+        console.log(time.timeUp);
         if (this.gameActive === true && (board.clicked === true || time.timeUp === true)){
-            console.log('type1')
             this.gameActive = false
             const payLoad = {
                 'method': 'answerCompleted',
@@ -466,7 +481,11 @@ class Game {
     }
     endGame(){
         board.endStatus()
-        clearInterval(this.timeRunner)
+        bars.reset()
+        // time.isTimeUp()
+        this.runStatus = false
+        this.count = 0
+        this.run = 0
         // 傳送遊戲結束的消息給後端 並在前端顯示一個勝利或失敗的圖像
         const payLoad = {
             'method': 'endGame',
@@ -475,6 +494,9 @@ class Game {
             'isHost': isHost
         }
         ws.send(JSON.stringify(payLoad))
+        setTimeout(()=>{
+            clearInterval(this.timeRunner)
+        }, 100)
     }
     showResult(isWin){
         board.showGameResult(isWin)
@@ -489,34 +511,38 @@ class Game {
 }
 class People{
     constructor(){
-        this.challenger = [
-            {name: 'Tristan',point: 600}, 
-            {name: 'Jasmine',point: 450},
-            {name: 'John',point: 353},
-            {name: 'Telecom',point: 320},
-            {name: 'Elevator',point: 445}]
+        this.challenger = []
+        this.question = ['就讀什麼科系', '平常的興趣愛好', '最近看的電影']
+        this.questionNum = 0
     }
     init(){
         allGame.style.display = "none"
         vsTxt.style.display = 'none'
-        rank.style.display = "inline-block"
-        rankTxt.style.display = "inline-block"
         rankPart.style.display = 'inline-block'
         document.body.style.backgroundColor = "#333"
+        this.updateQuestion()
+        this.render()
+    }
+    updateQuestion(){
+        rightArr.addEventListener('click', ()=>{
+            this.questionNum += 1;
+            this.render()
+        })
     }
     update(){
-        let type;
+        let color;
         this.sortPoints()
         this.renderList = this.challenger.map((variant, idx)=>{
             if (idx <= 2)
-                type = "success";
+                color = "yellow";
             else
-                type = 'dark'
-            return <Alert key={idx} variant={type}>
-                <h2>{idx + 1}.</h2>{variant.name}
-                <h3>{variant.point}</h3>
-            </Alert>
+                color = 'grey'
+            return `<div class="alert ${color}" key=${idx}>
+                <h2>${idx + 1}.</h2>${variant.name}
+                <h3>${variant.point}</h3>
+            </div> `
         })
+        this.renderList = this.renderList.join('')
         // console.log(this.renderList);
         this.render()
     }
@@ -526,7 +552,8 @@ class People{
         })
     }
     render(){
-        ReactDOM.render(this.renderList, rank)
+        ice_breaking_problem.innerText = `破冰問題： ${this.question[this.questionNum]}`
+        rank.innerHTML = this.renderList
     }
     recieveData(data){
         this.challenger = []
@@ -540,10 +567,10 @@ class People{
     }
 }
 let people = new People();
-let time = new Timer
-let board = new QuestionsBoard
-let game = new Game
-let bars = new GradeBar
+let time = new Timer()
+let board = new QuestionsBoard()
+let game = new Game()
+let bars = new GradeBar()
 
 // 社員第一次登入
 btnRegister.addEventListener('click', function (e) {
@@ -557,6 +584,108 @@ btnRegister.addEventListener('click', function (e) {
         ws.send(JSON.stringify(payLoad))
         return;
     }
+    // 檢驗無效的register
+    const payLoad = {
+        method: 'verify', 
+        status: 'register',
+        clientId: clientId,
+        userName: userName.value,
+        publickey: userPublicKey.value 
+    }
+    ws.send(JSON.stringify(payLoad))
+
+    // // // Connecting to Metamask
+    // // async function connectMetamask() {
+    // //     const provider = await detectEthereumProvider()
+    // //     if (provider) {          
+    // //         console.log('Ethereum successfully detected!')
+    // //         const chainId = await provider.request({
+    // //             method: 'eth_chainId'
+    // //         })
+    // //     } else {
+    // //         console.error('Please install MetaMask!', error)
+    // //     }
+    // // }
+    // // connectMetamask();
+
+    // // // Basic Params setting
+    // // // const fromAddress = '0x8F608b2DdAca497AaF5d3Cbe9731ACE0c7aFfC3E'
+    // // const fromAddress = ethereum.selectedAddress
+    // // const toAddress = userPublicKey.value
+    // // const tokenAmountToSend = 1     // unit: 1 token
+    // // const valueToSend_HEX = (tokenAmountToSend*1000000000000000000).toString(16)
+    // // const valueToSend_DEC = `${tokenAmountToSend}` + '000000000000000000'
+
+    // // // function sendTransaction() {
+    // // //     // request transaction through metamask
+    // // //     ethereum
+    // // //         .request({
+    // // //         method: 'eth_sendTransaction',
+    // // //         params: [
+    // // //             {
+    // // //             from: fromAddress,
+    // // //             to: toAddress,
+    // // //             value: `0x${valueToSend_HEX}`,  // unit is wei
+    // // //             gasPrice: '0x09184e72a000', // 10000000000000 wei, which is 0.00001 ether
+    // // //             gas: '0x7530',              // gas price lowerbound is 21000 
+    // // //             chainId: '0x4',
+    // // //             },
+    // // //         ],
+    // // //         })
+    // // //         .then((txHash) => console.log(txHash))
+    // // //         .catch((error) => console.error);
+    // // // }
+    // // // sendTransaction();
+
+    // // const web3 = new Web3(Web3.givenProvider)
+    // // let minABI = [
+    // // // transfer function on ABI
+    // // {
+    // //     "constant": false,
+    // //     "inputs": [
+    // //         {
+    // //             "name": "_to",
+    // //             "type": "address"
+    // //         },
+    // //         {
+    // //             "name": "_value",
+    // //             "type": "uint256"
+    // //         }
+    // //     ],
+    // //     "name": "transfer",
+    // //     "outputs": [
+    // //         {
+    // //             "name": "success",
+    // //             "type": "bool"
+    // //         }
+    // //     ],
+    // //     "payable": false,
+    // //     "stateMutability": "nonpayable",
+    // //     "type": "function"
+    // // }
+    // // ];
+
+    // // // sending custom token through minABI
+    // // let contractAddress = "0xcADC9b53e03635649ac09Ae71F5A1709a2b51268";
+    // // let contract = new web3.eth.Contract(minABI, contractAddress);
+    // // contract.methods.transfer(toAddress, valueToSend_DEC).send({
+    // //         from: fromAddress
+    // // });
+
+    // if (userName.value.length !== 0 && userPublicKey.value.length !== 0)
+    // {
+    //     const payLoad = {
+    //         'method': 'register',
+    //         'clientId': clientId, 
+    //         'username': userName.value,
+    //         'publickey': userPublicKey.value
+    //     }
+        
+    //     ws.send(JSON.stringify(payLoad))
+    // }
+})
+
+const registerSuccess = function(){
     // Connecting to Metamask
     async function connectMetamask() {
         const provider = await detectEthereumProvider()
@@ -646,7 +775,7 @@ btnRegister.addEventListener('click', function (e) {
         
         ws.send(JSON.stringify(payLoad))
     }
-})
+}
 
 // 社員已經登入過
 btnLogin.addEventListener('click', function (e) {
@@ -723,8 +852,14 @@ ws.onmessage = message => {
     }
     // LeadBoard
     if (response.method === "competitors"){
-        console.log('Front end');
         people.recieveData(response.data)
+    }
+    // Verify
+    if (response.method === "verifyResult"){
+        console.log(response);
+        if (response.result === "success"){
+            registerSuccess()
+        }
     }
     //register
     if (response.method === "register"){

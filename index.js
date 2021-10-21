@@ -17,6 +17,8 @@ const users = {}
 const games = {}
 // const scores = {"eric": 100, "mary": 50, "bob": 30, "alice": 60, "tristen": 80, "moven": 120}
 const scores = {}
+let hostID = undefined
+
 
 var scorelist = Object.keys(scores).map(function(key) {
 return [key, scores[key]];
@@ -26,8 +28,8 @@ scorelist.sort(function(first, second) {
 return second[1] - first[1];
 });
 // Create a new array with only the first 5 items
-console.log(scorelist.slice(0, 5));
-console.log(scorelist[0])
+// console.log(scorelist.slice(0, 5));
+// console.log(scorelist[0])
 
 //get questions
 const questions = require(__dirname + "/questions.json")
@@ -48,11 +50,43 @@ wsServer.on("request", request => {
         // Record Host Client ID
         if (result.method === "hosting"){
             hostID = result.clientId
+            sendBoardMessage()
         }
+        if (result.method === "verify"){
+            console.log(result);
+            const clientId = result.clientId
+            const username = result.userName
+            const publickey = result.publickey
+
+            console.log(username);
+            console.log((username in users));
+
+            if (username in users){
+                // users[username].clientId = clientId
+                payLoad = {
+                    "method": "verifyResult",
+                    "result": "fail",
+                    "username": username,
+                    "publickey": publickey
+                }
+                console.log("Player with username: " + username +" and public key: " + publickey + " already registered")
+            }else{
+                payLoad = {
+                    "method": "verifyResult",
+                    "result": "success",
+                    "username": username,
+                    "publickey": publickey
+                }
+            }
+
+            const con = clients[clientId].connection
+            con.send(JSON.stringify(payLoad))
+        }
+
         //a user wants to register
         if (result.method === "register"){
-            console.log(clients)
-            console.log(users)
+            // console.log(clients)
+            // console.log(users)
 
             const clientId = result.clientId
             const username = result.username
@@ -60,37 +94,37 @@ wsServer.on("request", request => {
 
             // 將分數計入後端
             scores[username] = {
-                'totalPoints': 0,
-                'currentPoints': 0
+                'totalPoints': 50,
+                'currentPoints': 0,
             }
 
-            if ((username in users) && (users[username].publickey === publickey)){
-                users[username].clientId = clientId
-                payLoad = {
-                    "method": "register",
-                    "result": "fail",
-                    "username": username,
-                    "publickey": publickey
-                }
+            // if ((username in users) && (users[username].publickey === publickey)){
+            //     users[username].clientId = clientId
+            //     payLoad = {
+            //         "method": "register",
+            //         "result": "fail",
+            //         "username": username,
+            //         "publickey": publickey
+            //     }
 
-                console.log("Player with username: " + username +" and public key: " + publickey + " already registered")
+            //     console.log("Player with username: " + username +" and public key: " + publickey + " already registered")
+            // }
+            // else{
+            payLoad = {
+                "method": "register",
+                "result": "success",
+                "username": username,
+                "publickey": publickey
             }
-            else{
-                payLoad = {
-                    "method": "register",
-                    "result": "success",
-                    "username": username,
-                    "publickey": publickey
-                }
 
-                users[username] = {
-                    "publickey": publickey,
-                    "clientId": clientId,
-                    "gameId": null
-                }
-
-                console.log("Player registered with username: " + username +" and public key: " + publickey)
+            users[username] = {
+                "publickey": publickey,
+                "clientId": clientId,
+                "gameId": null
             }
+
+            console.log("Player registered with username: " + username +" and public key: " + publickey)
+            // }
 
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
@@ -145,7 +179,8 @@ wsServer.on("request", request => {
                     "opponent": null,
                     "question": null,
                     'preparedNum': 0,
-                    'questionNum': 1
+                    'questionNum': 1,
+                    'modifiedTime': 0
                 }
 
                 users[username].gameId = gameId
@@ -185,11 +220,9 @@ wsServer.on("request", request => {
         if (result.method === "addPoints"){
             const gameId = result.gameId
             if (result.isHost){
-                scores[games[gameId].host].totalPoints += result.points
                 scores[games[gameId].host].currentPoints += result.points
             }
             else{
-                scores[games[gameId].opponent].totalPoints += result.points
                 scores[games[gameId].opponent].currentPoints += result.points
             }
             const payLoad = {
@@ -212,7 +245,7 @@ wsServer.on("request", request => {
         if (result.method === "answerCompleted"){
             const gameId = result.gameId
             games[gameId]['preparedNum'] += 1
-
+            console.log('prepared: ', games[gameId]['preparedNum']);
             if (games[gameId]['preparedNum'] == 2){
                 games[gameId]['preparedNum'] = 0
                 games[gameId]['questionNum'] += 1
@@ -222,6 +255,7 @@ wsServer.on("request", request => {
         }
         
         if (result.method === 'timeUp'){
+            console.log('problem');
             const gameId = result.gameId
             games[gameId]['preparedNum'] = 0
             games[gameId]['questionNum'] += 1
@@ -246,6 +280,7 @@ wsServer.on("request", request => {
             con.send(JSON.stringify(payLoad))
         }
         if (result.method === "endGame"){
+            console.log(scores);
             const gameId = result.gameId
             const clientId = result.clientId
             let isWin = null
@@ -275,8 +310,12 @@ wsServer.on("request", request => {
             if (games[gameId].modifiedTime == 2){
                 scores[ games[gameId].host ].currentPoints = 0;
                 scores[ games[gameId].opponent ].currentPoints = 0;
+                console.log(scores);
                 // Send message to leadBoard
                 sendBoardMessage()
+                // Remove space
+                delete games[gameId]
+                console.log(games);
             }
             const payLoad = {
                 'method': 'gameResult',
@@ -284,6 +323,7 @@ wsServer.on("request", request => {
             }
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
+
         }
     })
 
