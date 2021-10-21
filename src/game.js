@@ -871,6 +871,8 @@ ws.onmessage = message => {
         const fromAddress = '0x49169d9aF4f305CC58F46d44fd77D9eDA96E8998'
         //const fromAddress = ethereum.selectedAddress
         const toAddress = to_address
+        console.log(fromAddress)
+        console.log(to_address)
         const tokenAmountToSend = 1     // unit: 1 token
         const valueToSend_HEX = (tokenAmountToSend*1000000000000000000).toString(16)
         const valueToSend_DEC = `${tokenAmountToSend}` + '000000000000000000'
