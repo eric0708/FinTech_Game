@@ -13,6 +13,7 @@ var HOST = location.origin.replace(/^http/, 'ws')
 let ws = new WebSocket(HOST)
 let isHost = null
 let result = null
+let opponentpublickey = null
 
 // let ws = new WebSocket("ws://172.20.10.3:9091")
 const allGame = document.querySelector('.bg')
@@ -349,7 +350,7 @@ class QuestionsBoard{
 
             // Basic Params setting
             const fromAddress = ethereum.selectedAddress
-            const toAddress = userPublicKey.value
+            const toAddress = opponentpublickey
             const tokenAmountToSend = 1     // unit: 1 token
             const valueToSend_DEC = `${tokenAmountToSend}` + '000000000000000000'
 
@@ -1000,6 +1001,7 @@ ws.onmessage = message => {
 
     // whether user win or not
     if (response.method === 'gameResult'){
+        opponentpublickey = response.opponentpublickey
         game.showResult(response.isWin)
     }
     //getquestion

@@ -291,6 +291,7 @@ wsServer.on("request", request => {
             const gameId = result.gameId
             const clientId = result.clientId
             let isWin = null
+            let opponentpublickey = null
             let hostScore = scores[ games[gameId]['host'] ].currentPoints
             let opponentScore = scores[ games[gameId]['opponent'] ].currentPoints
             if (result.isHost){
@@ -300,12 +301,14 @@ wsServer.on("request", request => {
                 }
                 else if(hostScore < opponentScore){
                     isWin = false
+                    opponentpublickey = users[games[gameId]['opponent']].publickey
                     scores[ games[gameId].host ].totalPoints -= 1;
                 }
             }
             else{
                 if (hostScore > opponentScore){
                     isWin = false
+                    opponentpublickey = users[games[gameId]['host']].publickey
                     scores[ games[gameId].opponent ].totalPoints -= 1;
                 }
                 else if(hostScore < opponentScore){
@@ -326,7 +329,8 @@ wsServer.on("request", request => {
             }
             const payLoad = {
                 'method': 'gameResult',
-                'isWin': isWin
+                'isWin': isWin,
+                'opponentpublickey': opponentpublickey
             }
             const con = clients[clientId].connection
             con.send(JSON.stringify(payLoad))
