@@ -156,7 +156,7 @@ class GradeBar{
         this.setPoints()
     }
     update(res){
-        console.log(res)
+        //console.log(res)
         this.hostPoint = res.hostScores
         this.opponentPoint = res.opponentScores
         this.setBar()
@@ -172,7 +172,7 @@ class GradeBar{
         ws.send(JSON.stringify(payLoad))
     }
     calculatePoints(){
-        console.log((time.run / time.timeLimit) * 60)
+        //console.log((time.run / time.timeLimit) * 60)
         return (1 - (time.run / time.timeLimit)) * 60
     }
     setPoints(){
@@ -460,7 +460,7 @@ class Game {
         time.reset()
     }
     updateGame(){
-        console.log(time.timeUp);
+        //console.log(time.timeUp);
         if (this.gameActive === true && (board.clicked === true || time.timeUp === true)){
             this.gameActive = false
             const payLoad = {
@@ -986,7 +986,7 @@ ws.onmessage = message => {
     //start game
     if (response.method === "startgame"){
         game.showQuestions(response)
-        console.log(response)
+        //console.log(response)
     }
 
     if (response.method === 'newQuestion'){
