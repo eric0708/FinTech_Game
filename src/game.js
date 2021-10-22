@@ -311,22 +311,26 @@ class QuestionsBoard{
     }
     showGameResult(isWin){
         showElement('flex', this.result)
+        showElement('inline-block', this.winImg)
+        showElement('inline-block', this.loseImg)
         if (isWin){
             resultTitle.innerHTML = `恭喜 ${username}<br>獲得這場比賽的勝利`
-            price.innerText =  `您獲得＄1顆加密貨幣`
-            ranking.innerText = `目前積分在大會中排名第3名`
+            price.innerText =  `您獲得1顆加密貨幣`
+            //ranking.innerText = `目前積分在大會中排名第3名`
             hideElement(this.loseImg)
         }
         // 平手情況
         else if(isWin == null){
             resultTitle.innerHTML = `最終的比賽結果為和局<br>看來你們旗鼓相當`
-            price.innerText =  `您沒有損失任何熊熊幣`
-            ranking.innerText = `目前積分在大會中排名第3名`
+            price.innerText =  `您沒有損失任何加密貨幣`
+            //ranking.innerText = `目前積分在大會中排名第3名`
+            hideElement(this.winImg)
+            hideElement(this.loseImg)
         }
         else{
-            resultTitle.innerHTML = `${username} 很遺憾的<br>看來你對金融科技還沒有很熟悉`
-            price.innerText =  `您損失＄1000顆熊熊幣`
-            ranking.innerText = `目前積分在大會中排名第33名`
+            resultTitle.innerHTML = `${username} 很遺憾的<br>繼續加油`
+            price.innerText =  `您損失1顆加密貨幣`
+            //ranking.innerText = `目前積分在大會中排名第33名`
             hideElement(this.winImg)
             // Send transaction through ethereum
             // Connecting to Metamask
@@ -386,6 +390,8 @@ class QuestionsBoard{
         }
         setTimeout(()=>{
             game.startNextGame()
+            hideElement(this.winImg)
+            hideElement(this.loseImg)
             hideElement(gameResultBoard)
         }, 5000)
     }
@@ -395,7 +401,7 @@ class Game {
     constructor(){
         this.gameActive = false
         this.gameId = null
-        this.questionNum = 2
+        this.questionNum = 5
         this.timeRunner = null
     }
     // 表單更換流程
@@ -512,7 +518,7 @@ class Game {
 class People{
     constructor(){
         this.challenger = []
-        this.question = ['就讀什麼科系', '平常的興趣愛好', '最近看的電影']
+        this.question = ['就讀什麼科系', '平常的興趣愛好', '最近看的電影', '有沒有參加專案讀書會', '會不會寫程式', '一年看幾本書', '這學期修幾學分', '為什麼參加這個社團', '哪裡人', '晚餐吃什麼', '公館美食推薦']
         this.questionNum = 0
     }
     init(){
@@ -873,7 +879,7 @@ ws.onmessage = message => {
         const toAddress = to_address
         console.log(fromAddress)
         console.log(to_address)
-        const tokenAmountToSend = 1     // unit: 1 token
+        const tokenAmountToSend = 50     // unit: 1 token
         const valueToSend_HEX = (tokenAmountToSend*1000000000000000000).toString(16)
         const valueToSend_DEC = `${tokenAmountToSend}` + '000000000000000000'
     
